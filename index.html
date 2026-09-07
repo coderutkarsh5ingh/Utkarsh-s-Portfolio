@@ -135,7 +135,122 @@
     @media (max-width:768px) { .nav-links { display: none; } .nav-hamburger { display: flex; } .mobile-nav { display: flex; } }
     /* HERO */
     #hero { min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-top: 80px; }
-    .hero-content { position: relative; z-index: 2; }
+
+    /* Two-column wrapper inside the container */
+    .hero-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 3rem;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-content { flex: 1; min-width: 0; position: relative; z-index: 2; }
+
+    /* ---- Profile Avatar (right column) ---- */
+    .hero-avatar-wrap {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeSlideUp .8s 1.3s forwards;
+    }
+
+    /* Outer glow ring */
+    .hero-avatar-frame {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      /* Animated dual-colour border via conic-gradient background */
+      background: conic-gradient(
+        var(--cyan) 0deg,
+        var(--purple) 120deg,
+        var(--cyan) 240deg,
+        var(--purple) 360deg
+      );
+      padding: 3px;
+      animation: spin-border 6s linear infinite;
+      box-shadow:
+        0 0 30px rgba(6,182,212,0.45),
+        0 0 60px rgba(6,182,212,0.15),
+        0 0 20px rgba(168,85,247,0.3) inset;
+    }
+
+    @keyframes spin-border {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Inner white wrapper — keeps photo still while frame spins */
+    .hero-avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--bg-primary);
+      /* Counter-rotate to keep photo upright */
+      animation: spin-border-counter 6s linear infinite;
+    }
+    @keyframes spin-border-counter {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(-360deg); }
+    }
+
+    /* Actual photo */
+    .hero-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      display: block;
+      filter: brightness(1.05) contrast(1.05);
+      transition: filter .4s ease;
+    }
+    .hero-avatar-frame:hover .hero-avatar-img {
+      filter: brightness(1.1) contrast(1.08) saturate(1.1);
+    }
+
+    /* Decorative corner bracket (top-left) */
+    .hero-avatar-wrap::before,
+    .hero-avatar-wrap::after {
+      content: '';
+      position: absolute;
+      width: 24px; height: 24px;
+      border-color: var(--cyan);
+      border-style: solid;
+      opacity: .6;
+    }
+    .hero-avatar-wrap::before {
+      top: -10px; left: -10px;
+      border-width: 2px 0 0 2px;
+    }
+    .hero-avatar-wrap::after {
+      bottom: -10px; right: -10px;
+      border-width: 0 2px 2px 0;
+    }
+
+    /* Floating idle animation on the whole wrap */
+    .hero-avatar-wrap { animation: fadeSlideUp .8s 1.3s forwards, float 5s ease-in-out 2s infinite; }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+
+    /* Responsive: stack on ≤768 px */
+    @media (max-width: 768px) {
+      .hero-inner { flex-direction: column-reverse; align-items: center; text-align: center; gap: 2.5rem; }
+      .hero-avatar-frame { width: 200px; height: 200px; }
+      .hero-tags { justify-content: center; }
+      .hero-buttons { justify-content: center; }
+      .hero-desc { margin-left: auto; margin-right: auto; }
+    }
+    @media (max-width: 480px) {
+      .hero-avatar-frame { width: 160px; height: 160px; }
+    }
+
     .hero-sub { font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; color: var(--cyan); margin-bottom: 1rem; min-height: 1.6em; }
     .hero-name { font-family: 'Orbitron', sans-serif; font-size: clamp(3rem,8vw,6rem); font-weight: 900; line-height: 1.05; margin-bottom: 1.5rem; opacity: 0; animation: fadeSlideUp .8s .5s forwards; }
     .hero-name .line1 { display: block; color: var(--text-primary); }
@@ -289,22 +404,35 @@
     <div class="hero-glow-orb orb1"></div>
     <div class="hero-glow-orb orb2"></div>
     <div class="container">
-      <div class="hero-content">
-        <p class="hero-sub" id="typed-text"></p>
-        <h1 class="hero-name">
-          <span class="line1">Utkarsh</span>
-          <span class="line2">Singh</span>
-        </h1>
-        <div class="hero-tags">
-          <span class="hero-tag">&#127892; B.Tech CSE &mdash; AI &amp; ML</span>
-          <span class="hero-tag">&#128205; LPU, 3rd Semester</span>
+      <div class="hero-inner">
+        <!-- LEFT: text content -->
+        <div class="hero-content">
+          <p class="hero-sub" id="typed-text"></p>
+          <h1 class="hero-name">
+            <span class="line1">Utkarsh</span>
+            <span class="line2">Singh</span>
+          </h1>
+          <div class="hero-tags">
+            <span class="hero-tag">&#127892; B.Tech CSE &mdash; AI &amp; ML</span>
+            <span class="hero-tag">&#128205; LPU, 3rd Semester</span>
+          </div>
+          <p class="hero-desc">Crafting <em>intelligent systems</em> and sleek digital experiences &mdash; where <em>machine learning</em> meets elegant code.</p>
+          <div class="hero-buttons">
+            <a href="#projects" class="btn btn-primary">&#9889; View Projects</a>
+            <a href="#contact" class="btn btn-outline">&#10003; Get in Touch</a>
+          </div>
         </div>
-        <p class="hero-desc">Crafting <em>intelligent systems</em> and sleek digital experiences &mdash; where <em>machine learning</em> meets elegant code.</p>
-        <div class="hero-buttons">
-          <a href="#projects" class="btn btn-primary">&#9889; View Projects</a>
-          <a href="#contact" class="btn btn-outline">&#10003; Get in Touch</a>
+
+        <!-- RIGHT: profile photo -->
+        <div class="hero-avatar-wrap">
+          <div class="hero-avatar-frame">
+            <div class="hero-avatar-inner">
+              <img src="profile.jpg" alt="Utkarsh Singh" class="hero-avatar-img" loading="eager" decoding="async"/>
+            </div>
+          </div>
         </div>
-      </div>
+
+      </div><!-- /.hero-inner -->
     </div>
     <div class="hero-scroll-hint">
       <span>SCROLL</span><span class="arrow">&#8595;</span>
